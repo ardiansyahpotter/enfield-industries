@@ -1,0 +1,8 @@
+---
+import { isLoggedIn } from '../utils/auth.js';
+
+// Redirect to dashboard if logged in, otherwise to login page
+const redirectTo = isLoggedIn() ? '/dashboard' : '/login';
+---
+
+<meta http-equiv="refresh" content={`0;url=${redirectTo}`} />

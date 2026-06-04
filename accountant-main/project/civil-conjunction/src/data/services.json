@@ -1,0 +1,51 @@
+[
+  {
+    "id": 1,
+    "name": "CCTV Camera Installation",
+    "description": "Installation of CCTV cameras including mounting and cabling",
+    "unitPrice": 750000,
+    "category": "installation"
+  },
+  {
+    "id": 2,
+    "name": "Projector Installation",
+    "description": "Installation of projector including mounting and cabling",
+    "unitPrice": 850000,
+    "category": "installation"
+  },
+  {
+    "id": 3,
+    "name": "CCTV Camera Maintenance",
+    "description": "Regular maintenance and cleaning of CCTV cameras",
+    "unitPrice": 250000,
+    "category": "maintenance"
+  },
+  {
+    "id": 4,
+    "name": "Projector Repair",
+    "description": "Diagnosis and repair of projector issues",
+    "unitPrice": 500000,
+    "category": "repair"
+  },
+  {
+    "id": 5,
+    "name": "HD CCTV Camera",
+    "description": "High definition CCTV camera with night vision",
+    "unitPrice": 1200000,
+    "category": "product"
+  },
+  {
+    "id": 6,
+    "name": "Network Video Recorder",
+    "description": "16-channel NVR for CCTV recording",
+    "unitPrice": 3500000,
+    "category": "product"
+  },
+  {
+    "id": 7,
+    "name": "HDMI Projector",
+    "description": "High brightness HDMI projector",
+    "unitPrice": 6500000,
+    "category": "product"
+  }
+]

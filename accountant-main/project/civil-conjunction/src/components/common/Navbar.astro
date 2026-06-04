@@ -1,0 +1,35 @@
+---
+import { isLoggedIn, getCurrentUser, logout } from '../../utils/auth.js';
+
+const user = getCurrentUser();
+---
+
+<nav class="bg-dark text-light py-4 px-6 shadow-md">
+  <div class="container mx-auto flex justify-between items-center">
+    <a href="/dashboard" class="text-2xl font-bold flex items-center">
+      <span class="text-primary mr-2">CCTV</span>Pro
+    </a>
+    
+    {isLoggedIn() && (
+      <div class="flex items-center space-x-4">
+        <span class="hidden md:inline-block">
+          Welcome, {user?.name || 'User'}
+        </span>
+        <button
+          id="logoutBtn"
+          class="px-4 py-2 bg-primary text-white rounded hover:bg-red-700 transition-colors"
+        >
+          Logout
+        </button>
+      </div>
+    )}
+  </div>
+</nav>
+
+<script>
+  // Handle logout functionality
+  document.getElementById('logoutBtn')?.addEventListener('click', () => {
+    sessionStorage.removeItem('user');
+    window.location.href = '/login';
+  });
+</script>

@@ -1,0 +1,209 @@
+---
+// Check if user is admin first, before any other operations
+if (!isAdmin()) {
+  return Astro.redirect('/dashboard');
+}
+
+import MainLayout from '../../layouts/MainLayout.astro';
+import Card from '../../components/common/Card.astro';
+import Button from '../../components/common/Button.astro';
+import { formatCurrency } from '../../utils/formatters.js';
+import { isAdmin } from '../../utils/auth.js';
+
+import projects from '../../data/projects.json';
+import transactions from '../../data/transactions.json';
+
+// Calculate yearly data
+const currentYear = new Date().getFullYear();
+const yearlyData = {};
+
+// Initialize yearly data structure
+for (let year = currentYear - 2; year <= currentYear; year++) {
+  yearlyData[year] = {
+    totalProjects: 0,
+    completedProjects: 0,
+    income: 0,
+    expenses: 0,
+    profit: 0
+  };
+}
+
+// Process projects data
+projects.forEach(project => {
+  const projectYear = new Date(project.startDate).getFullYear();
+  
+  if (yearlyData[projectYear]) {
+    yearlyData[projectYear].totalProjects++;
+    
+    if (project.status === 'completed') {
+      yearlyData[projectYear].completedProjects++;
+    }
+  }
+});
+
+// Process transactions data
+transactions.forEach(transaction => {
+  const transactionYear = new Date(transaction.date).getFullYear();
+  
+  if (yearlyData[transactionYear]) {
+    if (transaction.type === 'income') {
+      yearlyData[transactionYear].income += transaction.amount;
+    } else {
+      yearlyData[transactionYear].expenses += transaction.amount;
+    }
+  }
+});
+
+// Calculate profits
+Object.keys(yearlyData).forEach(year => {
+  yearlyData[year].profit = yearlyData[year].income - yearlyData[year].expenses;
+});
+
+// Create chart data
+const chartLabels = Object.keys(yearlyData);
+const incomeData = chartLabels.map(year => yearlyData[year].income);
+const expensesData = chartLabels.map(year => yearlyData[year].expenses);
+const profitData = chartLabels.map(year => yearlyData[year].profit);
+---
+
+<MainLayout title="Annual Reports">
+  <div class="mb-8">
+    <Card>
+      <div class="mb-6">
+        <h2 class="text-xl font-semibold mb-4">Financial Overview by Year</h2>
+        <canvas id="financialChart" height="100"></canvas>
+      </div>
+      
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Year
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Total Projects
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Completed Projects
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Total Income
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Total Expenses
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Profit
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            {Object.entries(yearlyData).map(([year, data]) => (
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  {year}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {data.totalProjects}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {data.completedProjects}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {formatCurrency(data.income)}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {formatCurrency(data.expenses)}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <span class={data.profit >= 0 ? 'text-green-600' : 'text-red-600'}>
+                    {formatCurrency(data.profit)}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </Card>
+  </div>
+  
+  <div class="flex justify-end">
+    <Button id="exportPdfBtn" variant="primary">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-3.5l-1.5-1.5h-4L5.5 4H4zm7 5a1 1 0 01-1 1H6a1 1 0 110-2h4a1 1 0 011 1zm-2 3a1 1 0 00-1 1v3a1 1 0 102 0v-3a1 1 0 00-1-1z" clip-rule="evenodd" />
+      </svg>
+      Export Report as PDF
+    </Button>
+  </div>
+</MainLayout>
+
+<script>
+  import Chart from 'chart.js/auto';
+  
+  // Get the chart canvas
+  const ctx = document.getElementById('financialChart');
+  
+  // Chart data from server
+  const chartLabels = [2022, 2023, 2024]; // Example data
+  const incomeData = [0, 55000000, 58500000]; // Example data
+  const expensesData = [0, 40300000, 38800000]; // Example data
+  const profitData = [0, 14700000, 19700000]; // Example data
+  
+  // Create the chart
+  if (ctx) {
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: chartLabels,
+        datasets: [
+          {
+            label: 'Income',
+            data: incomeData,
+            backgroundColor: '#4CAF50',
+            borderColor: '#4CAF50',
+            borderWidth: 1
+          },
+          {
+            label: 'Expenses',
+            data: expensesData,
+            backgroundColor: '#E60023',
+            borderColor: '#E60023',
+            borderWidth: 1
+          },
+          {
+            label: 'Profit',
+            data: profitData,
+            backgroundColor: '#3B82F6',
+            borderColor: '#3B82F6',
+            borderWidth: 1
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              // Format y-axis labels as currency
+              callback: function(value) {
+                return new Intl.NumberFormat('id-ID', {
+                  style: 'currency',
+                  currency: 'IDR',
+                  maximumFractionDigits: 0
+                }).format(value);
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+  
+  // Export PDF button (simulation)
+  document.getElementById('exportPdfBtn')?.addEventListener('click', () => {
+    alert('PDF export feature would be implemented here in a production environment.');
+  });
+</script>

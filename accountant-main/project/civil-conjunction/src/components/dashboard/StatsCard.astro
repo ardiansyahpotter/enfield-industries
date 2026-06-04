@@ -1,0 +1,35 @@
+---
+import Card from '../common/Card.astro';
+
+const { title, value, icon, trend = null, variant = 'default' } = Astro.props;
+
+const getTrendClass = (trend) => {
+  if (!trend) return '';
+  return trend > 0 ? 'text-green-500' : 'text-red-500';
+};
+
+const trendClass = getTrendClass(trend);
+const formattedTrend = trend ? (trend > 0 ? `+${trend}%` : `${trend}%`) : null;
+---
+
+<Card variant={variant}>
+  <div class="flex items-start justify-between">
+    <div>
+      <p class="text-gray-500 text-sm mb-1">{title}</p>
+      <h3 class="text-2xl font-bold">{value}</h3>
+      
+      {trend !== null && (
+        <p class={`text-sm mt-2 ${trendClass}`}>
+          {formattedTrend}
+          <span class="ml-1 text-xs text-gray-500">vs last month</span>
+        </p>
+      )}
+    </div>
+    
+    {icon && (
+      <div class="text-gray-400">
+        <Fragment set:html={icon} />
+      </div>
+    )}
+  </div>
+</Card>

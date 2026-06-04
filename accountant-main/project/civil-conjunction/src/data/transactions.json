@@ -1,0 +1,90 @@
+[
+  {
+    "id": 1,
+    "projectId": 1,
+    "date": "2023-12-01",
+    "type": "expense",
+    "description": "Purchase of 24 CCTV cameras",
+    "amount": 28800000
+  },
+  {
+    "id": 2,
+    "projectId": 1,
+    "date": "2023-12-02",
+    "type": "expense",
+    "description": "Cabling and mounting materials",
+    "amount": 5200000
+  },
+  {
+    "id": 3,
+    "projectId": 1,
+    "date": "2023-12-03",
+    "type": "expense",
+    "description": "Labor costs",
+    "amount": 4500000
+  },
+  {
+    "id": 4,
+    "projectId": 1,
+    "date": "2023-12-15",
+    "type": "income",
+    "description": "Payment for CCTV installation",
+    "amount": 55000000
+  },
+  {
+    "id": 5,
+    "projectId": 2,
+    "date": "2024-01-10",
+    "type": "expense",
+    "description": "Projector maintenance supplies",
+    "amount": 800000
+  },
+  {
+    "id": 6,
+    "projectId": 2,
+    "date": "2024-01-11",
+    "type": "expense",
+    "description": "Labor costs",
+    "amount": 1000000
+  },
+  {
+    "id": 7,
+    "projectId": 2,
+    "date": "2024-01-12",
+    "type": "income",
+    "description": "Payment for projector maintenance",
+    "amount": 3500000
+  },
+  {
+    "id": 8,
+    "projectId": 3,
+    "date": "2024-02-15",
+    "type": "expense",
+    "description": "Purchase of 48 high-resolution cameras",
+    "amount": 57600000
+  },
+  {
+    "id": 9,
+    "projectId": 3,
+    "date": "2024-02-20",
+    "type": "expense",
+    "description": "Initial cabling and equipment",
+    "amount": 7400000
+  },
+  {
+    "id": 10,
+    "projectId": 4,
+    "date": "2024-03-01",
+    "type": "expense",
+    "description": "Purchase of 12 projectors",
+    "amount": 26000000
+  },
+  {
+    "id": 11,
+    "projectId": 4,
+    "date": "2024-03-05",
+    "type": "expense",
+    "description": "Mounting and cabling materials",
+    "amount": 4000000
+  }
+]

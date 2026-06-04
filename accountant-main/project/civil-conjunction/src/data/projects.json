@@ -1,0 +1,67 @@
+[
+  {
+    "id": 1,
+    "title": "Bank BCA CCTV Installation",
+    "client": "PT Bank Central Asia",
+    "description": "Installation of 24 CCTV cameras at the main branch office",
+    "startDate": "2023-12-01",
+    "endDate": "2023-12-15",
+    "status": "completed",
+    "responsibleUserId": 2,
+    "budget": 45000000,
+    "expenses": 38500000,
+    "revenue": 55000000
+  },
+  {
+    "id": 2,
+    "title": "Office Projector Maintenance",
+    "client": "XYZ Corporation",
+    "description": "Quarterly maintenance of 5 projectors at corporate headquarters",
+    "startDate": "2024-01-10",
+    "endDate": "2024-01-12",
+    "status": "completed",
+    "responsibleUserId": 3,
+    "budget": 2500000,
+    "expenses": 1800000,
+    "revenue": 3500000
+  },
+  {
+    "id": 3,
+    "title": "Mall Security System Upgrade",
+    "client": "Grand Indonesia Mall",
+    "description": "Upgrade of existing CCTV system with 48 high-resolution cameras",
+    "startDate": "2024-02-15",
+    "endDate": "2024-03-30",
+    "status": "in-progress",
+    "responsibleUserId": 2,
+    "budget": 120000000,
+    "expenses": 65000000,
+    "revenue": 150000000
+  },
+  {
+    "id": 4,
+    "title": "School Projector Installation",
+    "client": "International School Jakarta",
+    "description": "Installation of 12 new projectors in classrooms",
+    "startDate": "2024-03-01",
+    "endDate": "2024-03-10",
+    "status": "in-progress",
+    "responsibleUserId": 4,
+    "budget": 36000000,
+    "expenses": 30000000,
+    "revenue": 48000000
+  },
+  {
+    "id": 5,
+    "title": "Hotel CCTV System",
+    "client": "Grand Hyatt Hotel",
+    "description": "New CCTV system with 60 cameras for the entire hotel premises",
+    "startDate": "2024-04-15",
+    "endDate": "2024-05-30",
+    "status": "not-started",
+    "responsibleUserId": 3,
+    "budget": 85000000,
+    "expenses": 0,
+    "revenue": 105000000
+  }
+]

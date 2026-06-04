@@ -1,0 +1,42 @@
+---
+const { 
+  type = 'button',
+  variant = 'primary',
+  size = 'md',
+  fullWidth = false,
+  href = null,
+  id = '',
+  className = ''
+} = Astro.props;
+
+const variants = {
+  primary: 'bg-primary hover:bg-red-700 text-white',
+  secondary: 'bg-gray-600 hover:bg-gray-700 text-white',
+  success: 'bg-status-completed hover:bg-green-600 text-white',
+  warning: 'bg-status-inProgress hover:bg-yellow-600 text-white',
+  danger: 'bg-red-600 hover:bg-red-700 text-white',
+  outline: 'bg-transparent border border-primary text-primary hover:bg-primary hover:text-white'
+};
+
+const sizes = {
+  sm: 'py-1 px-3 text-sm',
+  md: 'py-2 px-4 text-base',
+  lg: 'py-3 px-6 text-lg'
+};
+
+const baseClass = 'rounded font-medium transition-colors duration-200 inline-flex items-center justify-center';
+const widthClass = fullWidth ? 'w-full' : '';
+const buttonClass = `${baseClass} ${variants[variant]} ${sizes[size]} ${widthClass} ${className}`;
+---
+
+{
+  href ? (
+    <a href={href} id={id} class={buttonClass}>
+      <slot />
+    </a>
+  ) : (
+    <button type={type} id={id} class={buttonClass}>
+      <slot />
+    </button>
+  )
+}

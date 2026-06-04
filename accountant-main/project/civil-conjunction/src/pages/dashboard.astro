@@ -1,0 +1,150 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import StatsCard from '../components/dashboard/StatsCard.astro';
+import Card from '../components/common/Card.astro';
+import ProjectCard from '../components/projects/ProjectCard.astro';
+import Badge from '../components/common/Badge.astro';
+import { formatCurrency } from '../utils/formatters.js';
+import { isAdmin, getCurrentUser } from '../utils/auth.js';
+import "../styles/global.css";
+import projects from '../data/projects.json';
+import users from '../data/users.json';
+import transactions from '../data/transactions.json';
+
+const currentUser = getCurrentUser();
+
+// Calculate statistics
+const totalProjects = projects.length;
+const completedProjects = projects.filter(p => p.status === 'completed').length;
+const inProgressProjects = projects.filter(p => p.status === 'in-progress').length;
+const notStartedProjects = projects.filter(p => p.status === 'not-started').length;
+
+// Calculate financial statistics
+const totalRevenue = projects.reduce((sum, project) => sum + project.revenue, 0);
+const totalExpenses = projects.reduce((sum, project) => sum + project.expenses, 0);
+const totalProfit = totalRevenue - totalExpenses;
+
+// Get recent projects (last 3)
+const recentProjects = [...projects].sort((a, b) => {
+  return new Date(b.startDate).getTime() - new Date(a.startDate).getTime();
+}).slice(0, 3);
+
+// Get projects assigned to current user
+const userProjects = projects.filter(project => project.responsibleUserId === currentUser?.id);
+
+// Icons
+const projectsIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+</svg>`;
+
+const revenueIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+</svg>`;
+
+const expensesIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+</svg>`;
+
+const profitIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+</svg>`;
+---
+
+<MainLayout title="Dashboard">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <StatsCard 
+      title="Total Projects" 
+      value={totalProjects.toString()}
+      icon={projectsIcon}
+      variant="primary"
+    />
+    
+    <StatsCard 
+      title="Total Revenue" 
+      value={formatCurrency(totalRevenue)}
+      icon={revenueIcon}
+      variant="success"
+    />
+    
+    <StatsCard 
+      title="Total Expenses" 
+      value={formatCurrency(totalExpenses)}
+      icon={expensesIcon}
+      variant="danger"
+    />
+    
+    <StatsCard 
+      title="Total Profit" 
+      value={formatCurrency(totalProfit)}
+      icon={profitIcon}
+      variant="primary"
+    />
+  </div>
+  
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+    <div class="lg:col-span-2">
+      <Card title="Project Status">
+        <div class="flex flex-wrap justify-between mb-6 gap-4">
+          <div class="flex items-center">
+            <span class="w-3 h-3 bg-status-completed rounded-full mr-2"></span>
+            <span>Completed: {completedProjects}</span>
+          </div>
+          <div class="flex items-center">
+            <span class="w-3 h-3 bg-status-inProgress rounded-full mr-2"></span>
+            <span>In Progress: {inProgressProjects}</span>
+          </div>
+          <div class="flex items-center">
+            <span class="w-3 h-3 bg-status-notStarted rounded-full mr-2"></span>
+            <span>Not Started: {notStartedProjects}</span>
+          </div>
+        </div>
+        
+        <div class="bg-gray-200 h-4 rounded-full overflow-hidden">
+          <div class="flex h-full">
+            <div class="bg-status-completed h-full" style={`width: ${(completedProjects / totalProjects) * 100}%`}></div>
+            <div class="bg-status-inProgress h-full" style={`width: ${(inProgressProjects / totalProjects) * 100}%`}></div>
+            <div class="bg-status-notStarted h-full" style={`width: ${(notStartedProjects / totalProjects) * 100}%`}></div>
+          </div>
+        </div>
+      </Card>
+    </div>
+    
+    {isAdmin() && (
+      <div>
+        <Card title="Team Members">
+          <ul class="divide-y">
+            {users.map(user => (
+              <li class="py-3 flex justify-between items-center">
+                <div>
+                  <p class="font-medium">{user.name}</p>
+                  <p class="text-sm text-gray-500">{user.email}</p>
+                </div>
+                <span class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800">
+                  {user.role}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      </div>
+    )}
+  </div>
+  
+  <h2 class="text-2xl font-bold mb-4">Recent Projects</h2>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+    {recentProjects.map(project => (
+      <ProjectCard project={project} users={users} />
+    ))}
+  </div>
+  
+  {!isAdmin() && userProjects.length > 0 && (
+    <>
+      <h2 class="text-2xl font-bold mb-4">Your Projects</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {userProjects.map(project => (
+          <ProjectCard project={project} users={users} />
+        ))}
+      </div>
+    </>
+  )}
+</MainLayout>

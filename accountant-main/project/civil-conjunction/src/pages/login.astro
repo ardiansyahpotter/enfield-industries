@@ -1,0 +1,109 @@
+---
+import AuthLayout from '../layouts/AuthLayout.astro';
+import users from '../data/users.json';
+import "../styles/global.css";
+---
+
+<AuthLayout title="Login">
+  <form id="loginForm" class="mt-8 space-y-6">
+    <div>
+      <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+      <input
+        id="email"
+        name="email"
+        type="email"
+        required
+        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+        placeholder="Enter your email"
+      />
+    </div>
+    
+    <div>
+      <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+      <input
+        id="password"
+        name="password"
+        type="password"
+        required
+        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+        placeholder="Enter your password"
+      />
+    </div>
+    
+    <div>
+      <button
+        type="submit"
+        class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+      >
+        Login
+      </button>
+    </div>
+    
+    <div id="errorMessage" class="text-primary text-center hidden"></div>
+    
+    <div class="text-center text-sm text-gray-500 mt-4">
+      <p>Demo Credentials:</p>
+      <p class="mt-1"><strong>Admin:</strong> admin@mail.com / admin123</p>
+      <p><strong>User:</strong> user@mail.com / user123</p>
+    </div>
+  </form>
+</AuthLayout>
+
+<script>
+  // Import the users for client-side validation
+  const users = [
+    {
+      "id": 1,
+      "name": "Admin User",
+      "email": "admin@mail.com",
+      "password": "admin123",
+      "role": "admin"
+    },
+    {
+      "id": 2,
+      "name": "Regular User",
+      "email": "user@mail.com",
+      "password": "user123",
+      "role": "user"
+    },
+    {
+      "id": 3,
+      "name": "John Doe",
+      "email": "john@mail.com",
+      "password": "john123",
+      "role": "user"
+    },
+    {
+      "id": 4,
+      "name": "Jane Smith",
+      "email": "jane@mail.com",
+      "password": "jane123",
+      "role": "user"
+    }
+  ];
+
+  document.getElementById('loginForm')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    const email = document.getElementById('email')?.value;
+    const password = document.getElementById('password')?.value;
+    const errorMessage = document.getElementById('errorMessage');
+    
+    const user = users.find(u => u.email === email && u.password === password);
+    
+    if (user) {
+      // Store user info in session storage (without password)
+      const { password: _, ...userWithoutPassword } = user;
+      sessionStorage.setItem('user', JSON.stringify(userWithoutPassword));
+      
+      // Redirect to dashboard
+      window.location.href = '/dashboard';
+    } else {
+      // Show error message
+      if (errorMessage) {
+        errorMessage.textContent = 'Invalid email or password';
+        errorMessage.classList.remove('hidden');
+      }
+    }
+  });
+</script>

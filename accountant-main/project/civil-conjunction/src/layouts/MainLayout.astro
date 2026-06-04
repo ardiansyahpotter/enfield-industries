@@ -1,0 +1,41 @@
+---
+import Navbar from '../components/common/Navbar.astro';
+import Sidebar from '../components/common/Sidebar.astro';
+import { isLoggedIn } from '../utils/auth.js';
+
+const { title } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <title>{title ? `${title} | CCTV Pro` : 'CCTV Pro'}</title>
+  </head>
+  <body class="bg-gray-100 min-h-screen">
+    <Navbar />
+    
+    <div class="flex">
+      <Sidebar />
+      
+      <main class="flex-1 p-6 md:ml-64 pt-8">
+        <div class="container mx-auto">
+          {title && (
+            <h1 class="text-3xl font-bold mb-6">{title}</h1>
+          )}
+          <slot />
+        </div>
+      </main>
+    </div>
+    
+    <script>
+      // Check if logged in, redirect to login if not
+      if (!sessionStorage.getItem('user') && window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
+    </script>
+  </body>
+</html>

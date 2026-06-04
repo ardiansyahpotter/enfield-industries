@@ -1,0 +1,34 @@
+---
+import { isLoggedIn } from '../utils/auth.js';
+import "../styles/global.css";
+const { title } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title ? `${title} | CCTV Pro` : 'CCTV Pro'}</title>
+  </head>
+  <body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
+      <div class="text-center">
+        <h1 class="text-3xl font-bold text-gray-900">
+          <span class="text-primary">CCTV</span>Pro
+        </h1>
+        {title && <h2 class="mt-2 text-xl text-gray-600">{title}</h2>}
+      </div>
+      
+      <slot />
+    </div>
+    
+    <script>
+      // Check if logged in, redirect to dashboard if already logged in
+      if (sessionStorage.getItem('user') && window.location.pathname === '/login') {
+        window.location.href = '/dashboard';
+      }
+    </script>
+  </body>
+</html>

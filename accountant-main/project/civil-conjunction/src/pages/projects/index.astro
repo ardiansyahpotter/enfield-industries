@@ -1,0 +1,44 @@
+---
+import MainLayout from '../../layouts/MainLayout.astro';
+import Card from '../../components/common/Card.astro';
+import Button from '../../components/common/Button.astro';
+import ProjectCard from '../../components/projects/ProjectCard.astro';
+import { isAdmin } from '../../utils/auth.js';
+
+import projects from '../../data/projects.json';
+import users from '../../data/users.json';
+
+// Sort projects by date (newest first)
+const sortedProjects = [...projects].sort((a, b) => {
+  return new Date(b.startDate).getTime() - new Date(a.startDate).getTime();
+});
+---
+
+<MainLayout title="Projects">
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-xl font-semibold">All Projects ({projects.length})</h2>
+    
+    {isAdmin() && (
+      <Button href="/projects/new" variant="primary">
+        <span class="mr-1">+</span> New Project
+      </Button>
+    )}
+  </div>
+  
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {sortedProjects.map(project => (
+      <ProjectCard project={project} users={users} />
+    ))}
+  </div>
+  
+  {projects.length === 0 && (
+    <Card>
+      <div class="text-center py-8">
+        <p class="text-gray-500 mb-4">No projects found</p>
+        {isAdmin() && (
+          <Button href="/projects/new" variant="primary">Create First Project</Button>
+        )}
+      </div>
+    </Card>
+  )}
+</MainLayout>

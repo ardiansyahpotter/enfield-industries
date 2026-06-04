@@ -1,0 +1,66 @@
+---
+import Badge from '../common/Badge.astro';
+import Button from '../common/Button.astro';
+import Card from '../common/Card.astro';
+import { formatCurrency, formatDate } from '../../utils/formatters.js';
+import { getCurrentUser } from '../../utils/auth.js';
+
+const { project, users } = Astro.props;
+const currentUser = getCurrentUser();
+const canEdit = currentUser?.role === 'admin' || currentUser?.id === project.responsibleUserId;
+
+// Find responsible user
+const responsibleUser = users.find(user => user.id === project.responsibleUserId);
+---
+
+<Card>
+  <div class="flex flex-col h-full">
+    <div class="flex justify-between items-start mb-3">
+      <h3 class="text-xl font-bold">{project.title}</h3>
+      <Badge status={project.status} />
+    </div>
+    
+    <p class="text-gray-600 mb-4">{project.description}</p>
+    
+    <div class="grid grid-cols-2 gap-4 mb-4">
+      <div>
+        <p class="text-sm text-gray-500">Client</p>
+        <p class="font-medium">{project.client}</p>
+      </div>
+      <div>
+        <p class="text-sm text-gray-500">Responsible</p>
+        <p class="font-medium">{responsibleUser?.name || 'Unassigned'}</p>
+      </div>
+      <div>
+        <p class="text-sm text-gray-500">Start Date</p>
+        <p class="font-medium">{formatDate(project.startDate)}</p>
+      </div>
+      <div>
+        <p class="text-sm text-gray-500">End Date</p>
+        <p class="font-medium">{project.endDate ? formatDate(project.endDate) : 'TBD'}</p>
+      </div>
+    </div>
+    
+    <div class="grid grid-cols-3 gap-2 mb-4">
+      <div>
+        <p class="text-sm text-gray-500">Budget</p>
+        <p class="font-medium">{formatCurrency(project.budget)}</p>
+      </div>
+      <div>
+        <p class="text-sm text-gray-500">Expenses</p>
+        <p class="font-medium">{formatCurrency(project.expenses)}</p>
+      </div>
+      <div>
+        <p class="text-sm text-gray-500">Revenue</p>
+        <p class="font-medium">{formatCurrency(project.revenue)}</p>
+      </div>
+    </div>
+    
+    <div class="mt-auto pt-4 flex justify-between">
+      <Button href={`/projects/${project.id}`} variant="outline" size="sm">View Details</Button>
+      {canEdit && (
+        <Button href={`/projects/${project.id}/edit`} variant="primary" size="sm">Edit</Button>
+      )}
+    </div>
+  </div>
+</Card>

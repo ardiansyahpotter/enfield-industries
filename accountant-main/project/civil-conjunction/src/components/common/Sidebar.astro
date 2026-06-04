@@ -1,0 +1,190 @@
+---
+import { isAdmin, getCurrentUser } from '../../utils/auth.js';
+
+const currentPath = Astro.url.pathname;
+const user = getCurrentUser();
+---
+
+<aside class="bg-dark text-light w-64 min-h-screen p-4 hidden md:block">
+  <div class="py-4 border-b border-gray-700">
+    <h2 class="text-xl font-bold">{user?.role === 'admin' ? 'Admin' : 'User'} Panel</h2>
+  </div>
+  
+  <nav class="mt-6">
+    <ul class="space-y-2">
+      <li>
+        <a 
+          href="/dashboard" 
+          class={`block py-2.5 px-4 rounded transition duration-200 ${currentPath === '/dashboard' ? 'bg-primary text-white' : 'hover:bg-gray-800'}`}
+        >
+          <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
+        </a>
+      </li>
+      
+      <li>
+        <a 
+          href="/projects" 
+          class={`block py-2.5 px-4 rounded transition duration-200 ${currentPath.includes('/projects') ? 'bg-primary text-white' : 'hover:bg-gray-800'}`}
+        >
+          <i class="fas fa-project-diagram mr-2"></i>Projects
+        </a>
+      </li>
+      
+      <li>
+        <a 
+          href="/services" 
+          class={`block py-2.5 px-4 rounded transition duration-200 ${currentPath.includes('/services') ? 'bg-primary text-white' : 'hover:bg-gray-800'}`}
+        >
+          <i class="fas fa-tools mr-2"></i>Services
+        </a>
+      </li>
+      
+      <li>
+        <a 
+          href="/transactions" 
+          class={`block py-2.5 px-4 rounded transition duration-200 ${currentPath.includes('/transactions') ? 'bg-primary text-white' : 'hover:bg-gray-800'}`}
+        >
+          <i class="fas fa-money-bill-wave mr-2"></i>Transactions
+        </a>
+      </li>
+      
+      {isAdmin() && (
+        <>
+          <li>
+            <a 
+              href="/reports" 
+              class={`block py-2.5 px-4 rounded transition duration-200 ${currentPath.includes('/reports') ? 'bg-primary text-white' : 'hover:bg-gray-800'}`}
+            >
+              <i class="fas fa-chart-bar mr-2"></i>Reports
+            </a>
+          </li>
+          
+          <li>
+            <a 
+              href="/users" 
+              class={`block py-2.5 px-4 rounded transition duration-200 ${currentPath.includes('/users') ? 'bg-primary text-white' : 'hover:bg-gray-800'}`}
+            >
+              <i class="fas fa-users mr-2"></i>Users
+            </a>
+          </li>
+        </>
+      )}
+    </ul>
+  </nav>
+</aside>
+
+<!-- Mobile sidebar toggle -->
+<div class="md:hidden fixed bottom-4 right-4 z-50">
+  <button
+    id="sidebarToggle"
+    class="bg-primary text-white p-3 rounded-full shadow-lg"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+    </svg>
+  </button>
+</div>
+
+<!-- Mobile sidebar -->
+<div id="mobileSidebar" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden">
+  <div class="bg-dark text-light w-64 min-h-screen p-4 transform transition-transform duration-300 -translate-x-full" id="sidebarContent">
+    <div class="flex justify-between items-center pb-4 border-b border-gray-700">
+      <h2 class="text-xl font-bold">{user?.role === 'admin' ? 'Admin' : 'User'} Panel</h2>
+      <button id="closeSidebar" class="text-white">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    
+    <nav class="mt-6">
+      <ul class="space-y-2">
+        <li>
+          <a 
+            href="/dashboard" 
+            class={`block py-2.5 px-4 rounded transition duration-200 ${currentPath === '/dashboard' ? 'bg-primary text-white' : 'hover:bg-gray-800'}`}
+          >
+            Dashboard
+          </a>
+        </li>
+        
+        <li>
+          <a 
+            href="/projects" 
+            class={`block py-2.5 px-4 rounded transition duration-200 ${currentPath.includes('/projects') ? 'bg-primary text-white' : 'hover:bg-gray-800'}`}
+          >
+            Projects
+          </a>
+        </li>
+        
+        <li>
+          <a 
+            href="/services" 
+            class={`block py-2.5 px-4 rounded transition duration-200 ${currentPath.includes('/services') ? 'bg-primary text-white' : 'hover:bg-gray-800'}`}
+          >
+            Services
+          </a>
+        </li>
+        
+        <li>
+          <a 
+            href="/transactions" 
+            class={`block py-2.5 px-4 rounded transition duration-200 ${currentPath.includes('/transactions') ? 'bg-primary text-white' : 'hover:bg-gray-800'}`}
+          >
+            Transactions
+          </a>
+        </li>
+        
+        {isAdmin() && (
+          <>
+            <li>
+              <a 
+                href="/reports" 
+                class={`block py-2.5 px-4 rounded transition duration-200 ${currentPath.includes('/reports') ? 'bg-primary text-white' : 'hover:bg-gray-800'}`}
+              >
+                Reports
+              </a>
+            </li>
+            
+            <li>
+              <a 
+                href="/users" 
+                class={`block py-2.5 px-4 rounded transition duration-200 ${currentPath.includes('/users') ? 'bg-primary text-white' : 'hover:bg-gray-800'}`}
+              >
+                Users
+              </a>
+            </li>
+          </>
+        )}
+      </ul>
+    </nav>
+  </div>
+</div>
+
+<script>
+  const sidebarToggle = document.getElementById('sidebarToggle');
+  const mobileSidebar = document.getElementById('mobileSidebar');
+  const sidebarContent = document.getElementById('sidebarContent');
+  const closeSidebar = document.getElementById('closeSidebar');
+  
+  sidebarToggle?.addEventListener('click', () => {
+    mobileSidebar?.classList.remove('hidden');
+    setTimeout(() => {
+      sidebarContent?.classList.remove('-translate-x-full');
+    }, 10);
+  });
+  
+  const hideSidebar = () => {
+    sidebarContent?.classList.add('-translate-x-full');
+    setTimeout(() => {
+      mobileSidebar?.classList.add('hidden');
+    }, 300);
+  };
+  
+  closeSidebar?.addEventListener('click', hideSidebar);
+  mobileSidebar?.addEventListener('click', (e) => {
+    if (e.target === mobileSidebar) {
+      hideSidebar();
+    }
+  });
+</script>

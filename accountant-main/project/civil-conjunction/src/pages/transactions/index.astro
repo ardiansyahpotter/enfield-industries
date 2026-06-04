@@ -1,0 +1,140 @@
+---
+import MainLayout from '../../layouts/MainLayout.astro';
+import Card from '../../components/common/Card.astro';
+import Button from '../../components/common/Button.astro';
+import { formatCurrency, formatDate } from '../../utils/formatters.js';
+import { isAdmin } from '../../utils/auth.js';
+
+import transactions from '../../data/transactions.json';
+import projects from '../../data/projects.json';
+
+// Sort transactions by date (newest first)
+const sortedTransactions = [...transactions].sort((a, b) => {
+  return new Date(b.date).getTime() - new Date(a.date).getTime();
+});
+
+// Calculate totals
+const totalIncome = transactions
+  .filter(t => t.type === 'income')
+  .reduce((sum, t) => sum + t.amount, 0);
+
+const totalExpenses = transactions
+  .filter(t => t.type === 'expense')
+  .reduce((sum, t) => sum + t.amount, 0);
+
+const netCashflow = totalIncome - totalExpenses;
+---
+
+<MainLayout title="Transactions">
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-xl font-semibold">All Transactions ({transactions.length})</h2>
+    
+    {isAdmin() && (
+      <Button href="/transactions/new" variant="primary">
+        <span class="mr-1">+</span> New Transaction
+      </Button>
+    )}
+  </div>
+  
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <Card>
+      <div class="text-center">
+        <p class="text-gray-500 text-sm mb-1">Total Income</p>
+        <p class="text-2xl font-bold text-green-600">{formatCurrency(totalIncome)}</p>
+      </div>
+    </Card>
+    
+    <Card>
+      <div class="text-center">
+        <p class="text-gray-500 text-sm mb-1">Total Expenses</p>
+        <p class="text-2xl font-bold text-red-600">{formatCurrency(totalExpenses)}</p>
+      </div>
+    </Card>
+    
+    <Card>
+      <div class="text-center">
+        <p class="text-gray-500 text-sm mb-1">Net Cashflow</p>
+        <p class={`text-2xl font-bold ${netCashflow >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+          {formatCurrency(netCashflow)}
+        </p>
+      </div>
+    </Card>
+  </div>
+  
+  <Card>
+    {sortedTransactions.length > 0 ? (
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Date
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Project
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Description
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Type
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Amount
+              </th>
+              {isAdmin() && (
+                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              )}
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            {sortedTransactions.map(transaction => {
+              const project = projects.find(p => p.id === transaction.projectId);
+              return (
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {formatDate(transaction.date)}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <a href={`/projects/${transaction.projectId}`} class="text-primary hover:underline">
+                      {project?.title || `Project #${transaction.projectId}`}
+                    </a>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="text-sm text-gray-900">{transaction.description}</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                      transaction.type === 'income' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                    }`}>
+                      {transaction.type === 'income' ? 'Income' : 'Expense'}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <span class={transaction.type === 'income' ? 'text-green-600' : 'text-red-600'}>
+                      {formatCurrency(transaction.amount)}
+                    </span>
+                  </td>
+                  {isAdmin() && (
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <Button href={`/transactions/${transaction.id}/edit`} variant="outline" size="sm">Edit</Button>
+                    </td>
+                  )}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    ) : (
+      <div class="text-center py-8">
+        <p class="text-gray-500 mb-4">No transactions found</p>
+        {isAdmin() && (
+          <Button href="/transactions/new" variant="primary">Add First Transaction</Button>
+        )}
+      </div>
+    )}
+  </Card>
+</MainLayout>
